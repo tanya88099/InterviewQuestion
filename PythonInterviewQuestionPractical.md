@@ -3,6 +3,7 @@
 ```python
     s= "abjadhjsdj'
     s[-3] =?
+```
 **Ans:** 's'
 
 2. Write a code for prime and non-prime number?
@@ -27,7 +28,7 @@ if flag == 1:
     print("non-prime")
 else:
     print("prime")
-
+```
 3. Write a code to find duplicate number in array.
 s=[1,2,7,8,0,1]
 ```python
@@ -43,7 +44,7 @@ for i in range(len(s)):
     
 print(duplicate)
 print(seen)
-
+```
 4. Write a code to find duplicate number index.
 s=[1,2,7,8,0,1]
 ```python
@@ -59,4 +60,4 @@ for i in range(len(s)):
     
 print(duplicate_num_index)
 print(seen)
-   
+```
