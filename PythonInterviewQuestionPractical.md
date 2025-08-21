@@ -1,8 +1,8 @@
 ***Interview Question***
 1. What is the output of this code?
 ```python
-s= "abjadhjsdj'
-s[-3] =?
+    s= "abjadhjsdj'
+    s[-3] =?
 **Ans:** 's'
 
 2. Write a code for prime and non-prime number?
