@@ -61,3 +61,4 @@ for i in range(len(s)):
 print(duplicate_num_index)
 print(seen)
 ```
+5. 
