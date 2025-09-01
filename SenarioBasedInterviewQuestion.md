@@ -57,3 +57,33 @@ The user's proposed solution is the correct approach: **increase the number of s
 * A 250 MB partition is small enough to be processed within the ~350 MB of available memory per task, allowing the job to complete successfully.
 
 The key takeaway is that the total memory isn't the only factor; the **memory available per task** and the **size of each data partition** are critical in preventing OutOfMemoryErrors in Spark.
+
+Based on the previous discussion, here's how to decide on the number of partitions.
+<img width="1349" height="453" alt="image" src="https://github.com/user-attachments/assets/f57f32d1-70cf-4e17-b42a-5b5c3827622f" />
+
+### The Problem
+
+The core issue is that the size of each data partition (1 GB) is much larger than the memory available to each individual task (around 350 MB, based on the previous calculation). This causes the OutOfMemoryError.
+
+### The Calculation
+
+The goal is to determine a number of partitions that makes the size of each partition smaller than the available memory per task.
+
+1.  **Determine the available memory per task.**
+    * Total Executor Memory: 5 GB
+    * Usable Memory (after Reserved Memory): $5 \text{ GB} - 300 \text{ MB} \approx 4.7 \text{ GB}$
+    * Unified Memory (60% of Usable): $4.7 \text{ GB} \times 0.60 \approx 2.8 \text{ GB}$
+    * Total cores: 4
+    * The 2.8 GB of unified memory is shared among all 4 cores. While it can be dynamically allocated, a simple approximation is to divide the unified memory by the number of cores to get a sense of the available memory per task.
+    * Approximate Memory per Task: $2.8 \text{ GB} \div 4 \text{ cores} \approx 0.7 \text{ GB}$ or 700 MB. The previous calculation of 350 MB was a bit low, as it assumed a 50/50 split between execution and storage memory, but the core logic holds. Let's use the more accurate 700 MB for this example.
+
+2.  **Calculate the required partition size.**
+    * To avoid an OutOfMemoryError, the size of each partition must be **less than** the memory available to a single task (approx. 700 MB). A safe buffer is also recommended.
+
+3.  **Determine the number of partitions.**
+    * Dataset size: 4 GB
+    * Formula: `Number of Partitions = Dataset Size / Desired Partition Size`
+    * Desired Partition Size should be less than the available memory per task. Let's aim for a partition size of about 500 MB to be safe.
+    * Number of Partitions: $4 \text{ GB} \div 500 \text{ MB} = 4096 \text{ MB} \div 500 \text{ MB} \approx 8.2$
+
+Based on this calculation, a minimum of 9 partitions would be needed. However, since the partitions are also created during the shuffle and Spark doesn't have an exact knowledge of the size of the data in each partition, it's safer to use a slightly higher number. This is why increasing the partitions from 4 to 12 or 15 is a reasonable and practical solution. The example of 16 partitions is a round number that easily divides the data into 250 MB chunks, which is well within the 700 MB per-task limit.
